@@ -15,7 +15,8 @@ function JurusitaAPI(token) {
             }
             getData()
         }
-    }, [token, callback, data])
+        setCallback(true)
+    }, [token, callback])
 
     return {
         data: [data, setData],

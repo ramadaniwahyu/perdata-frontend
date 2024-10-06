@@ -15,7 +15,7 @@ function HasilPanggilanAPI(token) {
             }
             getData()
         }
-    }, [token, callback, data])
+    }, [token, callback])
 
     return {
         data: [data, setData],

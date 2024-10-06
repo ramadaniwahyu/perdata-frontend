@@ -2,6 +2,8 @@ import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
 import { GlobalState } from '../../../GlobalState'
 
+import { Document, Page } from 'react-pdf'
+
 
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
@@ -14,10 +16,12 @@ import { classNames } from 'primereact/utils';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
+import { FileUpload } from 'primereact/fileupload'
 
 function Panggilan() {
     const state = useContext(GlobalState)
     const [panggilans] = state.panggilanAPI.data
+    const [callback, setCallback] = state.panggilanAPI.callback
     const [token] = state.token
     const [profile] = state.authAPI.profile
     const [jenis_perkaras] = state.jenisPerkaraAPI.data
@@ -34,16 +38,20 @@ function Panggilan() {
         tgl_dilaksanakan: '',
         hasil_panggilan: '',
         desc: '',
+        edoc: '',
         jurusita: profile._id
     }
 
     const [panggilan, setPanggilan] = useState(emptyData)
     const [onEdit, setOnEdit] = useState(false)
     const [selectedData, setSelectedData] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [metaKey] = useState(true);
     const [submitted, setSubmitted] = useState(false)
     const [dialog, setDialog] = useState(false)
     const [deleteDialog, setDeleteDialog] = useState(false)
+    const [docDialog, setDocDialog] = useState(false)
+    const [fileURL, setFileURL] = useState(null)
     const toast = useRef(null);
 
     const openNew = () => {
@@ -61,19 +69,26 @@ function Panggilan() {
         setDeleteDialog(false);
     };
 
+    const hideDocDialog = () => {
+        setDocDialog(false);
+    };
+
     const saveData = async (event) => {
         event.preventDefault()
         setSubmitted(true)
         if (onEdit) {
-            const res = await axios.put(`/api/panggilan/${panggilan._id}`, panggilan, {
-                headers: { Authorization: token }
-            })
-            console.log(res.data);
-            console.log(panggilan);
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
-            setOnEdit(false)
-            setDialog(false)
-            setPanggilan(emptyData)
+            try {
+                const res = await axios.put(`/api/panggilan/${panggilan._id}`, panggilan, {
+                    headers: { Authorization: token }
+                })
+                toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
+                setCallback(!callback)
+                setOnEdit(false)
+                setDialog(false)
+                setPanggilan(emptyData)
+            } catch (error) {
+                toast.current.show({ severity: 'error', summary: 'There is error', detail: error.message, life: 3000 });
+            }
         } else {
             const res = await axios.post('/api/panggilan', panggilan, {
                 headers: { Authorization: token }
@@ -81,20 +96,63 @@ function Panggilan() {
             console.log(res.data);
             console.log(panggilan);
             toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
+            setCallback(!callback)
             setDialog(false)
             setPanggilan(emptyData)
         }
-        
+
     };
-    
+
     const deleteData = async (event) => {
         event.preventDefault()
         const res = await axios.delete(`/api/panggilan/${panggilan._id}`, {
             headers: { Authorization: token }
         })
-        toast.current.show({ severity:'error', summary:'Successful', detail: res.data.msg, life: 3000 });
+        toast.current.show({ severity: 'error', summary: 'Successful', detail: res.data.msg, life: 3000 });
+        setCallback(!callback)
         setDeleteDialog(false)
     }
+
+    const uploadDoc = async (event) => {
+        event.preventDefault()
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        
+        const res = await axios.post(`/api/panggilan/${panggilan._id}/document`, formData,
+            {
+                headers: { Authorization: token }
+            })
+        toast.current.show({ severity: 'error', summary: 'Successful', detail: res.data.msg, life: 3000 });
+        setCallback(!callback)
+        setDocDialog(false)
+    }
+
+    const showData = (panggilan) => {
+        setPanggilan({ ...panggilan });
+        // console.log(panggilan);
+
+        axios(`/file/${panggilan.edoc}`, {
+            method: "GET",
+            responseType: "blob",
+            headers: { Authorization: token }
+            //Force to receive data in a Blob Format
+        })
+            .then(response => {
+                //Create a Blob from the PDF Stream
+                const file = new Blob([response.data], {
+                    type: "application/pdf"
+                });
+                //Build a URL from the file
+                const fileLink = URL.createObjectURL(file);
+                //Open the URL on new Window
+                // window.open(fileLink);
+                setFileURL(fileLink)
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        setDocDialog(true)
+    };
 
     const editData = (panggilan) => {
         setPanggilan({ ...panggilan });
@@ -105,11 +163,15 @@ function Panggilan() {
     const confirmDelete = (panggilan) => {
         setPanggilan(panggilan);
         setDeleteDialog(true);
-      };
+    };
 
     const onInputChange = e => {
         const { name, value } = e.target
         setPanggilan({ ...panggilan, [name]: value })
+    }
+
+    const handleFileSelect = e => {
+        setSelectedFile(e.target.files)
     }
 
     const dialogFooter = (
@@ -120,10 +182,16 @@ function Panggilan() {
     );
     const deleteDialogFooter = (
         <>
-          <Button label="No" icon="pi pi-times" text onClick={hideDeleteDialog} />
-          <Button label="Yes" icon="pi pi-check" text onClick={deleteData} />
+            <Button label="No" icon="pi pi-times" text onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" text onClick={deleteData} />
         </>
-      );
+    );
+    const docDialogFooter = (
+        <>
+            <Button label="Close" icon="pi pi-times" text onClick={hideDocDialog} />
+            <Button label="Upload" icon="pi pi-arrow-up" text onClick={uploadDoc} />
+        </>
+    );
 
     const topButton = () => {
         return (
@@ -135,7 +203,7 @@ function Panggilan() {
 
     const nomorTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-0">
+            <div className="flex flex-column gap-3">
                 <span>{rowData.nomor_perkara}</span><br />
                 <span>{rowData.jenis_panggilan.name}</span>
             </div>
@@ -144,7 +212,7 @@ function Panggilan() {
 
     const pihakTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-0">
+            <div className="flex flex-column gap-3">
                 <span>{rowData.pihak}</span><br />
                 <span>{rowData.alamat}</span>
             </div>
@@ -153,25 +221,32 @@ function Panggilan() {
 
     const tglTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-0">
-                <span>Tanggal Kirim: {rowData.tgl_kirim.toString("es")}</span><br />
-                <span>Tanggal Dilaksanakan: {rowData.tgl_dilaksanakan.toString("es")}</span>
+            <div className="flex flex-column gap-3">
+                <span>Tanggal Kirim: {rowData.tgl_kirim.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span><br />
+                <span>Tanggal Dilaksanakan: {rowData.tgl_dilaksanakan.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span>
             </div>
         );
     };
 
     const descTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-0">
+            <div className="flex flex-column gap-3">
                 <span>{rowData.hasil_panggilan.name}</span><br />
                 <span>{rowData.desc}</span>
+            </div>
+        );
+    };
+    const docTemplate = (rowData) => {
+        return (
+            <div className="flex flex-column gap-3 mb-4">
+                <Button icon="pi pi-file" severity="help" aria-label="Edit" onClick={() => showData(rowData)} />
             </div>
         );
     };
 
     const actionTemplate = (rowData) => {
         return (
-            <div className="flex flex-wrap justify-content-center gap-3 mb-4">
+            <div className="flex flex-wrap gap-3 mb-4">
                 <Button icon="pi pi-pencil" severity="info" aria-label="Edit" onClick={() => editData(rowData)} />
                 <Button icon="pi pi-trash" severity="danger" aria-label="Delete" onClick={() => confirmDelete(rowData)} />
             </div>
@@ -188,16 +263,17 @@ function Panggilan() {
             <main className='card m-6'>
                 <Toast ref={toast} />
                 <Toolbar className="mb-4" end={topButton}></Toolbar>
-                <DataTable value={panggilans} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single" selection={selectedData} onSelectionChange={(e) => setSelectedData(e.value)} dataKey="_id" metaKeySelection={metaKey} tableStyle={{ minWidth: '50rem' }}>
+                <DataTable value={panggilans} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single" selection={selectedData} onSelectionChange={(e) => setSelectedData(e.value)} dataKey="_id" metaKeySelection={metaKey} tableStyle={{ minWidth: '10rem' }}>
+                    {/* <Column field="_id" header="No" style={{ width: '5%' }}></Column> */}
                     <Column field="nomor_perkara" header="Nomor Perkara" body={nomorTemplate} style={{ width: '20%' }}></Column>
                     <Column field="pihak" header="Pihak" body={pihakTemplate} style={{ width: '20%' }}></Column>
                     <Column field="tgl_kirim" header="Tanggal Relaas" body={tglTemplate} style={{ width: '20%' }}></Column>
-                    <Column field="desc" header="Keterangan" body={descTemplate} style={{ width: '20%' }}></Column>
-                    <Column field="action" header="Action" body={actionTemplate} style={{ width: '20%' }}></Column>
+                    <Column field="desc" header="Keterangan" body={descTemplate} style={{ width: '25%' }}></Column>
+                    <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column>
+                    <Column field="action" header="Action" body={actionTemplate} style={{ width: '10%' }}></Column>
                 </DataTable>
 
                 <Dialog visible={dialog} style={{ width: '800px' }} header="Detil Panggilan" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
-                    {panggilan._id && <img src={`https://robohash.org/${panggilan._id}`} alt={panggilan.nomor_perkara} width="150" className="mt-0 mx-auto mb-5 block shadow-2" />}
                     <div className="field">
                         <label htmlFor="nomor_perkara">Nomor Perkara</label>
                         <div className="p-inputgroup">
@@ -262,7 +338,7 @@ function Panggilan() {
                                 <i className="pi pi-envelope"></i>
                             </span>
                             <Calendar id="tgl_kirim" dateFormat="dd/mm/yy" name="tgl_kirim" value={panggilan.tgl_kirim} onChange={onInputChange} required showIcon
-                            className={classNames({ 'p-invalid': submitted && !panggilan.tgl_kirim })}/>
+                                className={classNames({ 'p-invalid': submitted && !panggilan.tgl_kirim })} />
                         </div>
                         {submitted && !panggilan.tgl_kirim && <small className="p-invalid">Tanggal Kirim is required.</small>}
                     </div>
@@ -273,8 +349,8 @@ function Panggilan() {
                             <span className="p-inputgroup-addon">
                                 <i className="pi pi-map"></i>
                             </span>
-                            <Calendar id="tgl_dilaksanakan" dateFormat="dd/mm/yy" name="tgl_dilaksanakan" value={panggilan.tgl_dilaksanakan} onChange={onInputChange} showIcon 
-                            className={classNames({ 'p-invalid': submitted && !panggilan.tgl_dilaksanakan })}/>
+                            <Calendar id="tgl_dilaksanakan" dateFormat="dd/mm/yy" name="tgl_dilaksanakan" value={panggilan.tgl_dilaksanakan} onChange={onInputChange} showIcon
+                                className={classNames({ 'p-invalid': submitted && !panggilan.tgl_dilaksanakan })} />
                         </div>
                         {submitted && !panggilan.tgl_dilaksanakan && <small className="p-invalid">Tanggal Dilaksanakan is required.</small>}
                     </div>
@@ -286,7 +362,7 @@ function Panggilan() {
                                 <i className="pi pi-tag"></i>
                             </span>
                             <Dropdown id="hasil_panggilan" name="hasil_panggilan" value={panggilan.hasil_panggilan} required onChange={onInputChange} options={hasil_panggilans} optionLabel='name'
-                                filter placeholder="Select a Jenis Perkara" className={classNames({ 'p-invalid': submitted && !panggilan.hasil_panggilan })}/>
+                                filter placeholder="Select a Jenis Perkara" className={classNames({ 'p-invalid': submitted && !panggilan.hasil_panggilan })} />
                         </div>
                         {submitted && !panggilan.hasil_panggilan && <small className="p-invalid">Hasil is required.</small>}
                     </div>
@@ -306,9 +382,22 @@ function Panggilan() {
                         <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                         {panggilan && (
                             <span>
-                                Yakin menghapus <b>{panggilan.name} ({panggilan.email})</b>?
+                                Yakin menghapus?
                             </span>
                         )}
+                    </div>
+                </Dialog>
+                <Dialog visible={docDialog} style={{ width: '800px' }} header="Konfirmasi" modal footer={docDialogFooter} onChange={handleFileSelect} onHide={hideDocDialog}>
+                    <div className="flex flex-column justify-content-center">
+                    <div className="field">
+                        <label htmlFor="file">Dokumen Elektronik</label>
+                        <div className="p-inputgroup">
+                            <FileUpload mode="basic" name="file" onUpload={uploadDoc} accept="application/pdf"/><br />
+                        </div>
+                    </div>
+
+                        <iframe src={fileURL} height='500px' />
+
                     </div>
                 </Dialog>
             </main >

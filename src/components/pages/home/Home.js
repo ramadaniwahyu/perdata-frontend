@@ -1,11 +1,6 @@
-import { useContext } from "react"
 import { Link } from "react-router-dom"
-import { GlobalState } from "../../../GlobalState"
 
 function Home() {
-    const state = useContext(GlobalState)
-    const [isLogged] = state.authAPI.isLogged
-
     return (
         <>
             <div className="relative isolate px-6 pt-14 lg:px-8">
@@ -18,16 +13,15 @@ function Home() {
                             Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
                             fugiat veniam occaecat fugiat aliqua.
                         </p>
-                        <div className="mt-10 flex items-center justify-center gap-x-6">
-                            {
-                                isLogged ? '' :
-                                    <Link
-                                        to="/login"
-                                        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    >
-                                        Log in untuk memulai
-                                    </Link>
-                            }
+                        <div className="w-full flex flex-column align-items-center justify-content-center gap-3 py-5 mt-6">
+
+                            <Link
+                                to="/login"
+                                className="p-button font-bold"
+                            >
+                                Log in untuk memulai
+                            </Link>
+
                         </div>
                     </div>
                 </div>

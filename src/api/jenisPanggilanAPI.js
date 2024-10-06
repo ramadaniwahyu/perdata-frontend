@@ -15,7 +15,7 @@ function JenisPanggilanAPI(token) {
             }
             getData()
         }
-    }, [token, callback, data])
+    }, [token, callback])
 
     return {
         data: [data, setData],

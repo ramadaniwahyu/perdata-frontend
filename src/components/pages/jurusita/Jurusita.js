@@ -25,6 +25,7 @@ function Jurusita() {
     const state = useContext(GlobalState)
     const [jurusitas] = state.jurusitaAPI.data
     const [token] = state.token
+    const [callback, setCallback] = state.jurusitaAPI.callback
     const [jurusita, setJurusita] = useState(emptyJurusita)
     const [onEdit, setOnEdit] = useState(false)
     const [selectedData, setSelectedData] = useState(null);
@@ -57,6 +58,7 @@ function Jurusita() {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
+            setCallback(!callback)
             setOnEdit(false)
         } else {
             const res = await axios.post('/api/jurusita', jurusita, {
@@ -64,6 +66,7 @@ function Jurusita() {
             })
             toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
         }
+        setCallback(!callback)
         setDialog(false)
         setJurusita(emptyJurusita)
     };
@@ -74,6 +77,7 @@ function Jurusita() {
             headers: { Authorization: token }
         })
         toast.current.show({ severity:'error', summary:'Successful', detail: res.data.msg, life: 3000 });
+        setCallback(!callback)
         setDeleteDialog(false)
     }
 

@@ -11,11 +11,28 @@ function PanggilanAPI(token) {
                 const res = await axios.get('/api/panggilan', {
                     headers: { Authorization: token }
                 })
-                setData(res.data.result)
+                const value = res.data.result
+                let data_array = []                
+                value.map(item => {
+                    let set = {}
+                    set['_id'] = item._id
+                    set['nomor_perkara'] = item.nomor_perkara
+                    set['jenis_panggilan'] = item.jenis_panggilan
+                    set['pihak'] = item.pihak
+                    set['alamat'] = item.alamat
+                    set['tgl_kirim'] = new Date(item.tgl_kirim)
+                    set['tgl_dilaksanakan'] = new Date(item.tgl_dilaksanakan)
+                    set['hasil_panggilan'] = item.hasil_panggilan
+                    set['desc'] = item.desc
+                    set['edoc'] = item.edoc
+                    data_array.push(set)
+                })                
+                setData(data_array)
             }
             getData()
         }
-    }, [token, callback, data])
+        setCallback(true)
+    }, [token, callback])
 
     return {
         data: [data, setData],

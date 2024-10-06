@@ -8,6 +8,7 @@ export default function Header() {
     const state = useContext(GlobalState)
     const [isAdmin] = state.authAPI.isAdmin
     const [isLogged] = state.authAPI.isLogged
+    const [profile] = state.authAPI.profile
 
     const logoutUser = async () => {
         await axios.get('/api/logout')
@@ -90,7 +91,8 @@ export default function Header() {
         </Link>
     );
     const end = (
-        <div className="flex align-items-center gap-2">
+        <div className="flex align-items-center gap-2 mr-2">
+            <span>Selamat datang, {profile.name}</span>
             {
                 isLogged ? <Link className="flex align-items-center p-menuitem-link"
                 onClick={logoutUser}>
