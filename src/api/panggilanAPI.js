@@ -18,6 +18,7 @@ function PanggilanAPI(token) {
                     set['_id'] = item._id
                     set['nomor_perkara'] = item.nomor_perkara
                     set['jenis_panggilan'] = item.jenis_panggilan
+                    set['jenis_perkara'] = item.jenis_perkara
                     set['pihak'] = item.pihak
                     set['alamat'] = item.alamat
                     set['tgl_kirim'] = new Date(item.tgl_kirim)

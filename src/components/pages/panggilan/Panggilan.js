@@ -93,8 +93,8 @@ function Panggilan() {
             const res = await axios.post('/api/panggilan', panggilan, {
                 headers: { Authorization: token }
             })
-            console.log(res.data);
             console.log(panggilan);
+            
             toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
             setCallback(!callback)
             setDialog(false)
@@ -203,17 +203,17 @@ function Panggilan() {
 
     const nomorTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-3">
-                <span>{rowData.nomor_perkara}</span><br />
-                <span>{rowData.jenis_panggilan.name}</span>
+            <div className="flex flex-column align-items-center sm:align-items-start">
+                <span><strong>Nomor Perkara: </strong><br />{rowData.nomor_perkara}</span><br />
+                <span><strong>Jenis Panggilan: </strong><br />{rowData.jenis_panggilan.name}</span><br />
             </div>
         );
     };
 
     const pihakTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-3">
-                <span>{rowData.pihak}</span><br />
+            <div className="flex flex-column align-items-center sm:align-items-start">
+                <span><strong>{rowData.pihak}</strong></span>
                 <span>{rowData.alamat}</span>
             </div>
         );
@@ -221,18 +221,18 @@ function Panggilan() {
 
     const tglTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-3">
-                <span>Tanggal Kirim: {rowData.tgl_kirim.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span><br />
-                <span>Tanggal Dilaksanakan: {rowData.tgl_dilaksanakan.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span>
+            <div className="flex flex-column align-items-center sm:align-items-start">
+                <span><strong>Tanggal Kirim: </strong><br />{rowData.tgl_kirim.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span><br />
+                <span><strong>Tanggal Pelaksanaan: </strong><br />{rowData.tgl_dilaksanakan.toLocaleString("en-GB").slice(0, 10).split("-").reverse().join("/")}</span>
             </div>
         );
     };
 
     const descTemplate = (rowData) => {
         return (
-            <div className="flex flex-column gap-3">
-                <span>{rowData.hasil_panggilan.name}</span><br />
-                <span>{rowData.desc}</span>
+            <div className="flex flex-column align-items-center sm:align-items-start">
+                <span><strong>Status: </strong><br />{rowData.hasil_panggilan.name}</span><br />
+                <span><strong>Keterangan: </strong><br />{rowData.desc ? rowData.desc: 'Tidak ada keterangan.'}</span>
             </div>
         );
     };
@@ -269,7 +269,7 @@ function Panggilan() {
                     <Column field="pihak" header="Pihak" body={pihakTemplate} style={{ width: '20%' }}></Column>
                     <Column field="tgl_kirim" header="Tanggal Relaas" body={tglTemplate} style={{ width: '20%' }}></Column>
                     <Column field="desc" header="Keterangan" body={descTemplate} style={{ width: '25%' }}></Column>
-                    <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column>
+                    {/* <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column> */}
                     <Column field="action" header="Action" body={actionTemplate} style={{ width: '10%' }}></Column>
                 </DataTable>
 
