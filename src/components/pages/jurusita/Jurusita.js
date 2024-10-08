@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
-import { GlobalState } from '../../../GlobalState'
+import { GlobalState, rootUrl } from '../../../GlobalState'
 
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
@@ -54,14 +54,14 @@ function Jurusita() {
         event.preventDefault()
         setSubmitted(true)
         if (onEdit) {
-            const res = await axios.put(`/api/jurusita/${jurusita._id}`, jurusita, {
+            const res = await axios.put(`${rootUrl}/api/jurusita/${jurusita._id}`, jurusita, {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
             setCallback(!callback)
             setOnEdit(false)
         } else {
-            const res = await axios.post('/api/jurusita', jurusita, {
+            const res = await axios.post(`${rootUrl}/api/jurusita`, jurusita, {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -73,7 +73,7 @@ function Jurusita() {
     
     const deleteJurusita = async (event) => {
         event.preventDefault()
-        const res = await axios.delete(`/api/jurusita/${jurusita._id}`, {
+        const res = await axios.delete(`${rootUrl}/api/jurusita/${jurusita._id}`, {
             headers: { Authorization: token }
         })
         toast.current.show({ severity:'error', summary:'Successful', detail: res.data.msg, life: 3000 });

@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image'
+import { rootUrl } from '../../../GlobalState';
 
 function Login() {
     const [user, setUser] = useState({
@@ -17,7 +18,7 @@ function Login() {
     const loginSubmit = async e => {
         e.preventDefault()
         try {
-            await axios.post('/api/login', { ...user })
+            await axios.post(`${rootUrl}/api/login`, { ...user })
 
             localStorage.setItem('firstLogin', true)
 

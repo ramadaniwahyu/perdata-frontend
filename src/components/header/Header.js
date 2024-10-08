@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Menubar } from 'primereact/menubar';
-import { GlobalState } from '../../GlobalState'
+import { GlobalState, rootUrl } from '../../GlobalState'
 import axios from 'axios'
 
 export default function Header() {
@@ -11,7 +11,7 @@ export default function Header() {
     const [profile] = state.authAPI.profile
 
     const logoutUser = async () => {
-        await axios.get('/api/logout')
+        await axios.get(`${rootUrl}/api/logout`)
 
         localStorage.removeItem('firstLogin')
 

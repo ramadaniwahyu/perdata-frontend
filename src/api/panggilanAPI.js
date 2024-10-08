@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { rootUrl } from '../GlobalState'
 
 function PanggilanAPI(token) {
     const [data, setData] = useState([])
@@ -8,7 +9,7 @@ function PanggilanAPI(token) {
     useEffect(() => {
         if (token){
             const getData = async () => {
-                const res = await axios.get('/api/panggilan', {
+                const res = await axios.get(`${rootUrl}/api/panggilan`, {
                     headers: { Authorization: token }
                 })
                 const value = res.data.result

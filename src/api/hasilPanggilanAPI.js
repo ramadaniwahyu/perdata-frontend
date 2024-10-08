@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { rootUrl } from '../GlobalState'
 
 function HasilPanggilanAPI(token) {
     const [data, setData] = useState([])
@@ -8,7 +9,7 @@ function HasilPanggilanAPI(token) {
     useEffect(() => {
         if (token){
             const getData = async () => {
-                const res = await axios.get('/api/hasil-panggilan', {
+                const res = await axios.get(`${rootUrl}/api/hasil-panggilan`, {
                     headers: { Authorization: token }
                 })
                 setData(res.data)

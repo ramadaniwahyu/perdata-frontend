@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
-import { GlobalState } from '../../../GlobalState'
+import { GlobalState, rootUrl } from '../../../GlobalState'
 
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
@@ -61,7 +61,7 @@ function Users() {
         setSubmitted(true)
         if (onEdit) {
             try {
-                const res = await axios.put(`/api/users/${user._id}`, user, {
+                const res = await axios.put(`${rootUrl}/api/users/${user._id}`, user, {
                     headers: { Authorization: token }
                 })
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -71,7 +71,7 @@ function Users() {
             }
         } else {
             try {
-                const res = await axios.post('/api/users', user, {
+                const res = await axios.post(`${rootUrl}/api/users`, user, {
                     headers: { Authorization: token }
                 })
                 toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -86,7 +86,7 @@ function Users() {
     const activateUser = async (event) => {
         event.preventDefault()
         try {
-            const res = await axios.patch(`/api/users/${user._id}`, {...user, is_active: isActive}, {
+            const res = await axios.patch(`${rootUrl}/api/users/${user._id}`, {...user, is_active: isActive}, {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -100,7 +100,7 @@ function Users() {
     const deleteUser = async (event) => {
         event.preventDefault()
         try {
-            const res = await axios.delete(`/api/users/${user._id}`, {
+            const res = await axios.delete(`${rootUrl}/api/users/${user._id}`, {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'error', summary: 'Successful', detail: res.data.msg, life: 3000 });
