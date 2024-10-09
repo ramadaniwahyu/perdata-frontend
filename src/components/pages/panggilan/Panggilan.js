@@ -1,9 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
-import { GlobalState, rootUrl } from '../../../GlobalState'
-
-import { Document, Page } from 'react-pdf'
-
+import { GlobalState } from '../../../GlobalState'
 
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
@@ -78,7 +75,7 @@ function Panggilan() {
         setSubmitted(true)
         if (onEdit) {
             try {
-                const res = await axios.put(`${rootUrl}/api/panggilan/${panggilan._id}`, panggilan, {
+                const res = await axios.put(`/api/panggilan/${panggilan._id}`, panggilan, {
                     headers: { Authorization: token }
                 })
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -90,7 +87,7 @@ function Panggilan() {
                 toast.current.show({ severity: 'error', summary: 'There is error', detail: error.message, life: 3000 });
             }
         } else {
-            const res = await axios.post(`${rootUrl}/api/panggilan`, panggilan, {
+            const res = await axios.post(`/api/panggilan`, panggilan, {
                 headers: { Authorization: token }
             })
             console.log(panggilan);
@@ -105,7 +102,7 @@ function Panggilan() {
 
     const deleteData = async (event) => {
         event.preventDefault()
-        const res = await axios.delete(`${rootUrl}/api/panggilan/${panggilan._id}`, {
+        const res = await axios.delete(`/api/panggilan/${panggilan._id}`, {
             headers: { Authorization: token }
         })
         toast.current.show({ severity: 'error', summary: 'Successful', detail: res.data.msg, life: 3000 });
@@ -118,7 +115,7 @@ function Panggilan() {
         const formData = new FormData();
         formData.append('file', selectedFile);
         
-        const res = await axios.post(`${rootUrl}/api/panggilan/${panggilan._id}/document`, formData,
+        const res = await axios.post(`/api/panggilan/${panggilan._id}/document`, formData,
             {
                 headers: { Authorization: token }
             })

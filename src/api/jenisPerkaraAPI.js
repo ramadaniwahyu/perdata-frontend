@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { rootUrl } from '../GlobalState'
 
 function JenisPerkaraAPI(token) {
     const [data, setData] = useState([])
@@ -9,7 +8,7 @@ function JenisPerkaraAPI(token) {
     useEffect(() => {
         if (token){
             const getData = async () => {
-                const res = await axios.get(`${rootUrl}/api/jenis-perkara`, {
+                const res = await axios.get(`/api/jenis-perkara`, {
                     headers: { Authorization: token }
                 })
                 setData(res.data)

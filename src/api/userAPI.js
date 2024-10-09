@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { rootUrl } from '../GlobalState'
 
 function UserAPI(token) {
     const [data, setData] = useState([])
@@ -9,7 +8,7 @@ function UserAPI(token) {
     useEffect(() => {
         if (token) {
             const getUsers = async () => {
-                const res = await axios.get(`${rootUrl}/api/users`, {
+                const res = await axios.get(`/api/users`, {
                     headers: { Authorization: token }
                 })
                 setData(res.data.result)

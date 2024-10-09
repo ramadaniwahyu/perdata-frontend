@@ -12,7 +12,7 @@ import axios from 'axios'
 
 export const GlobalState = createContext()
 
-export const rootUrl = process.env.NODE_ENV === "production" ? "http://localhost:8000" : ""
+// export const rootUrl = process.env.NODE_ENV === "production" ? "http://localhost:8000" : ""
 
 export const DataProvider = ({children}) =>{
     const [token, setToken] = useState(false)
@@ -21,7 +21,7 @@ export const DataProvider = ({children}) =>{
         const firstLogin = localStorage.getItem('firstLogin')
         if(firstLogin){
             const refreshToken = async () =>{
-                const res = await axios.get(`${rootUrl}/api/refresh_token`)
+                const res = await axios.get(`/api/refresh_token`)
                 console.log(res);
                 
         
