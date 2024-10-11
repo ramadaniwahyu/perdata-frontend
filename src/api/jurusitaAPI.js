@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import {rootUrl} from '../GlobalState'
 
 function JurusitaAPI(token) {
     const [data, setData] = useState([])
@@ -9,7 +8,7 @@ function JurusitaAPI(token) {
     useEffect(() => {
         if (token){
             const getData = async () => {
-                const res = await axios.get(`${rootUrl}/api/jurusita`, {
+                const res = await axios.get(`/api/jurusita`, {
                     headers: { Authorization: token }
                 })
                 setData(res.data)

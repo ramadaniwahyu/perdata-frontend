@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image'
-import { rootUrl } from '../../../GlobalState';
 
 function Login() {
     const [user, setUser] = useState({
@@ -20,11 +19,10 @@ function Login() {
         try {
             const res = await axios.post(`${rootUrl}/api/login`, { ...user })
             console.log(res);
-            
 
             localStorage.setItem('firstLogin', true)
 
-            // window.location.href = "/";
+            window.location.href = "/";
         } catch (err) {
             alert(err.response)
         }

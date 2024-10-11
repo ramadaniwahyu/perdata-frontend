@@ -1,6 +1,5 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
-import {rootUrl} from '../GlobalState'
 
 function AuthAPI(token) {
     const [isLogged, setIsLogged] = useState(false)
@@ -11,7 +10,7 @@ function AuthAPI(token) {
         if(token){
             const getUser = async () =>{
                 try {
-                    const res = await axios.get(`${rootUrl}/api/profile`, {
+                    const res = await axios.get(`/api/profile`, {
                         headers: {Authorization: token}
                     })
 
