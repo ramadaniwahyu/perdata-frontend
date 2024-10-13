@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Image } from 'primereact/image'
+import { Image } from 'primereact/image';
 
 function Login() {
     const [user, setUser] = useState({
@@ -14,17 +14,16 @@ function Login() {
         setUser({ ...user, [name]: value })
     }
 
-    const loginSubmit = async e => {
+    const loginSubmit = async (e, res, req ) => {
         e.preventDefault()
         try {
-            const res = await axios.post(`${rootUrl}/api/login`, { ...user })
-            console.log(res);
+            await axios.post(`/api/login`, { ...user })
 
             localStorage.setItem('firstLogin', true)
 
             window.location.href = "/";
         } catch (err) {
-            alert(err.response)
+            alert(err.message);
         }
     }
 

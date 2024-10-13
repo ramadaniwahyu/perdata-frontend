@@ -15,6 +15,7 @@ function HasilPanggilanAPI(token) {
             }
             getData()
         }
+        setCallback(true)
     }, [token, callback])
 
     return {

@@ -9,10 +9,10 @@ import HasilPanggilanAPI from './api/hasilPanggilanAPI'
 import PanggilanAPI from './api/panggilanAPI'
 
 import axios from 'axios'
+import PegawaiAPI from './api/pegawaiAPI'
+import JabatanAPI from './api/jabatanAPI'
 
 export const GlobalState = createContext()
-
-export const rootUrl = process.env.NODE_ENV === "production" ? "http://localhost:8030" : "http://localhost:8030"
 
 export const DataProvider = ({children}) =>{
     const [token, setToken] = useState(false)
@@ -22,7 +22,6 @@ export const DataProvider = ({children}) =>{
         if(firstLogin){
             const refreshToken = async () =>{
                 const res = await axios.get(`/api/refresh_token`)
-                console.log(res);
                 
                 setToken(res.data.accesstoken)                
     
@@ -39,6 +38,8 @@ export const DataProvider = ({children}) =>{
         token: [token, setToken],
         authAPI: AuthAPI(token),
         jurusitaAPI: JurusitaAPI(token),
+        pegawaiAPI: PegawaiAPI(token),
+        jabatanAPI: JabatanAPI(token),
         jenisPanggilanAPI: JenisPanggilanAPI(token),
         jenisPerkaraAPI: JenisPerkaraAPI(token),
         hasilPanggilanAPI: HasilPanggilanAPI(token),

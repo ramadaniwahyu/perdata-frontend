@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-function JenisPerkaraAPI(token) {
+function JabatanAPI(token) {
     const [data, setData] = useState([])
     const [callback, setCallback] = useState(false)
 
     useEffect(() => {
         if (token){
             const getData = async () => {
-                const res = await axios.get(`/api/jenis-perkara`, {
+                const res = await axios.get(`/api/jabatan`, {
                     headers: { Authorization: token }
                 })
                 setData(res.data)
@@ -24,4 +24,4 @@ function JenisPerkaraAPI(token) {
     }
 }
 
-export default JenisPerkaraAPI
+export default JabatanAPI

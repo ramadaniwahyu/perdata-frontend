@@ -32,12 +32,6 @@ export default function Header() {
             url: '/panggilan',
             template: itemRenderer
         },
-        {
-            label: 'Jurusita',
-            icon: 'pi pi-users',
-            url: '/jurusita',
-            template: itemRenderer
-        }
     ]
 
     const adminItems = [
@@ -48,10 +42,22 @@ export default function Header() {
             template: itemRenderer
         },
         {
-            label: 'Jurusita',
-            icon: 'pi pi-users',
-            url: '/jurusita',
-            template: itemRenderer
+            label: 'Pengaturan',
+            icon: 'pi pi-bars',
+            items: [
+                {
+                    label: 'Pegawai',
+                    icon: 'pi pi-users',
+                    url: '/pegawai',
+                    template: itemRenderer
+                },
+                {
+                    label: 'Pengguna',
+                    icon: 'pi pi-user',
+                    url: '/pengguna',
+                    template: itemRenderer
+                }
+            ]
         },
         {
             label: 'Referensi',
@@ -73,12 +79,6 @@ export default function Header() {
                     label: 'Hasil Panggilan',
                     icon: 'pi pi-tags',
                     url: '/jenis-perkara',
-                    template: itemRenderer
-                },
-                {
-                    label: 'Pengguna',
-                    icon: 'pi pi-user',
-                    url: '/pengguna',
                     template: itemRenderer
                 }
             ]

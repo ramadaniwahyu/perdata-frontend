@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { GlobalState } from '../../../GlobalState'
 
@@ -36,7 +36,7 @@ function Panggilan() {
         hasil_panggilan: '',
         desc: '',
         edoc: '',
-        jurusita: profile._id
+        jurusita: profile.pegawai
     }
 
     const [panggilan, setPanggilan] = useState(emptyData)
@@ -50,6 +50,10 @@ function Panggilan() {
     const [docDialog, setDocDialog] = useState(false)
     const [fileURL, setFileURL] = useState(null)
     const toast = useRef(null);
+
+    useEffect(()=> {
+        //pass
+    })
 
     const openNew = () => {
         setPanggilan(emptyData);
@@ -193,7 +197,7 @@ function Panggilan() {
     const topButton = () => {
         return (
             <React.Fragment>
-                <Button label="New" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
+                <Button label="New" icon="pi pi-plus" severity="success" className="mr-2 " onClick={openNew} />
             </React.Fragment>
         )
     }
@@ -259,7 +263,7 @@ function Panggilan() {
             </header>
             <main className='card m-6'>
                 <Toast ref={toast} />
-                <Toolbar className="mb-4" end={topButton}></Toolbar>
+                <Toolbar className="mb-4" end={profile.pegawai ? topButton : ''}></Toolbar>
                 <DataTable value={panggilans} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single" selection={selectedData} onSelectionChange={(e) => setSelectedData(e.value)} dataKey="_id" metaKeySelection={metaKey} tableStyle={{ minWidth: '10rem' }}>
                     {/* <Column field="_id" header="No" style={{ width: '5%' }}></Column> */}
                     <Column field="nomor_perkara" header="Nomor Perkara" body={nomorTemplate} style={{ width: '20%' }}></Column>
@@ -267,7 +271,7 @@ function Panggilan() {
                     <Column field="tgl_kirim" header="Tanggal Relaas" body={tglTemplate} style={{ width: '20%' }}></Column>
                     <Column field="desc" header="Keterangan" body={descTemplate} style={{ width: '25%' }}></Column>
                     {/* <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column> */}
-                    <Column field="action" header="Action" body={actionTemplate} style={{ width: '10%' }}></Column>
+                    <Column field="action" header="Action" body={profile.pegawai ? actionTemplate : ''} style={{ width: '10%' }}></Column>
                 </DataTable>
 
                 <Dialog visible={dialog} style={{ width: '800px' }} header="Detil Panggilan" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>

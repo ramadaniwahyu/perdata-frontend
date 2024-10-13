@@ -30,14 +30,14 @@ function PanggilanAPI(token) {
                 })                
                 setData(data_array)
             }
-            getData()
+            getData();
         }
         setCallback(true)
     }, [token, callback])
 
     return {
         data: [data, setData],
-        callback: [callback, setCallback]
+        callback: [callback, setCallback],
     }
 }
 

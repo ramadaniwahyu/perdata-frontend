@@ -13,8 +13,9 @@ function UserAPI(token) {
                 })
                 setData(res.data.result)
             }
-            getUsers()
+            getUsers()            
         }
+        setCallback(true)
     }, [token, callback])
 
     return {

@@ -12,17 +12,21 @@ import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
+import { Dropdown } from 'primereact/dropdown'
 
 function Users() {
     let emptyUser = {
         name: '',
         email: '',
+        pegawai: '',
         role: 0,
         password: ''
     }
 
     const state = useContext(GlobalState)
     const [users] = state.userAPI.data
+    const [callback, setCallback] = state.userAPI.callback
+    const [pegawais] = state.pegawaiAPI.data
     const [token] = state.token
     const [user, setUser] = useState(emptyUser)
     const [onEdit, setOnEdit] = useState(false)
@@ -65,7 +69,10 @@ function Users() {
                     headers: { Authorization: token }
                 })
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
+                setCallback(!callback)
                 setOnEdit(false)
+                setDialog(false)
+                setUser(emptyUser)
             } catch (error) {
                 toast.current.show({ severity: 'error', summary: error.response.statusText, detail: error.message, life: 3000 });
             }
@@ -75,25 +82,23 @@ function Users() {
                     headers: { Authorization: token }
                 })
                 toast.current.show({ severity: 'primary', summary: 'Successful', detail: res.data.msg, life: 3000 });
+                setCallback(!callback)
+                setDialog(false)
+                setUser(emptyUser)
             } catch (error) {
                 toast.current.show({ severity: 'error', summary: error.response.statusText, detail: error.message, life: 3000 });
             }
         }
-        setDialog(false)
-        setUser(emptyUser)
     };
 
     const activateUser = async (event) => {
         event.preventDefault()
-        try {
-            const res = await axios.patch(`/api/users/${user._id}`, {...user, is_active: isActive}, {
-                headers: { Authorization: token }
-            })
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
-            setIsActive(false)
-        } catch (error) {
-            toast.current.show({ severity: 'error', summary: error.response.statusText, detail: error.message, life: 3000 });
-        }
+        const res = await axios.patch(`/api/users/${user._id}`, { ...user, is_active: isActive }, {
+            headers: { Authorization: token }
+        })
+        toast.current.show({ severity: 'success', summary: 'Successful', detail: res.data.msg, life: 3000 });
+        setCallback(!callback)
+        setIsActive(false)
         setActivateUserDialog(false)
     }
 
@@ -104,15 +109,18 @@ function Users() {
                 headers: { Authorization: token }
             })
             toast.current.show({ severity: 'error', summary: 'Successful', detail: res.data.msg, life: 3000 });
+            setCallback(!callback)
+            setDeleteDialog(false)
         } catch (error) {
             toast.current.show({ severity: 'error', summary: error.response.statusText, detail: error.message, life: 3000 });
         }
-        setDeleteDialog(false)
     }
 
     const editUser = (user) => {
         setUser({ ...user });
         setOnEdit(true)
+        console.log(user);
+        
         setDialog(true);
     };
 
@@ -198,12 +206,24 @@ function Users() {
                 <Toolbar className="mb-4" end={topButton}></Toolbar>
                 <DataTable value={users} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single" selection={selectedData} onSelectionChange={(e) => setSelectedData(e.value)} dataKey="_id" metaKeySelection={metaKey} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="name" header="Name" body={nameTemplate} style={{ width: '25%' }}></Column>
-                    <Column field="email" header="Email" style={{ width: '50%' }}></Column>
+                    <Column field="email" header="Email" style={{ width: '25%' }}></Column>
+                    <Column field="pegawai.name" header="Pegawai" style={{ width: '25%' }}></Column>
                     <Column field="action" header="Action" body={actionTemplate} style={{ width: '25%' }}></Column>
                 </DataTable>
 
                 <Dialog visible={dialog} style={{ width: '600px' }} header="User Details" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
                     {user._id && <img src={`https://robohash.org/${user._id}`} alt={user.name} width="150" className="mt-0 mx-auto mb-5 block shadow-2" />}
+                    <div className="field">
+                        <label htmlFor="pegawai">Pegawai</label>
+                        <div className="p-inputgroup">
+                            <span className="p-inputgroup-addon">
+                                <i className="pi pi-tag"></i>
+                            </span>
+                            <Dropdown id="pegawai" name="pegawai" value={user.pegawai} onChange={onInputChange} options={pegawais} optionLabel='name'
+                                filter className="md:w-20rem w-full" placeholder="Select Pegawai" />
+                        </div>
+                    </div>
+
                     <div className="field">
                         <label htmlFor="name">Nama</label>
                         <div className="p-inputgroup">
@@ -254,7 +274,7 @@ function Users() {
                         <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                         {user && (
                             <span>
-                                {user.is_active ? 'Deaktivasi': 'Aktivasi'} <b>{user.name} ({user.email})</b>?
+                                {user.is_active ? 'Deaktivasi' : 'Aktivasi'} <b>{user.name} ({user.email})</b>?
                             </span>
                         )}
                     </div>
