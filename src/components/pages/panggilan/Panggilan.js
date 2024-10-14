@@ -147,6 +147,7 @@ function Panggilan() {
                 const fileLink = URL.createObjectURL(file);
                 //Open the URL on new Window
                 // window.open(fileLink);
+                setPanggilan({...panggilan, file: fileLink})
                 setFileURL(fileLink)
             })
             .catch(error => {
@@ -240,7 +241,12 @@ function Panggilan() {
     const docTemplate = (rowData) => {
         return (
             <div className="flex flex-column gap-3 mb-4">
-                <Button icon="pi pi-file" severity="help" aria-label="Edit" onClick={() => showData(rowData)} />
+                <span>
+                <Button icon="pi pi-file" severity={ !rowData.edoc ? 'secondary' : 'help' } aria-label="Edit" onClick={() => showData(rowData)} /><br />
+                    {
+                        rowData.edoc ? 'Edit' : 'Unggah'
+                    }
+                </span>
             </div>
         );
     };
@@ -270,11 +276,11 @@ function Panggilan() {
                     <Column field="pihak" header="Pihak" body={pihakTemplate} style={{ width: '20%' }}></Column>
                     <Column field="tgl_kirim" header="Tanggal Relaas" body={tglTemplate} style={{ width: '20%' }}></Column>
                     <Column field="desc" header="Keterangan" body={descTemplate} style={{ width: '25%' }}></Column>
-                    {/* <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column> */}
+                    <Column field="document" header="Dokumen Elektronik" body={docTemplate} style={{ width: '5%' }}></Column>
                     <Column field="action" header="Action" body={profile.pegawai ? actionTemplate : ''} style={{ width: '10%' }}></Column>
                 </DataTable>
 
-                <Dialog visible={dialog} style={{ width: '800px' }} header="Detil Panggilan" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
+                <Dialog visible={dialog} style={{ width: '60vw' }} header="Detil Panggilan" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
                     <div className="field">
                         <label htmlFor="nomor_perkara">Nomor Perkara</label>
                         <div className="p-inputgroup">
@@ -388,17 +394,17 @@ function Panggilan() {
                         )}
                     </div>
                 </Dialog>
-                <Dialog visible={docDialog} style={{ width: '800px' }} header="Konfirmasi" modal footer={docDialogFooter} onChange={handleFileSelect} onHide={hideDocDialog}>
+                <Dialog visible={docDialog} style={{ width: '70vw' }} header="Dokumen Elektronik" modal footer={docDialogFooter} onChange={handleFileSelect} onHide={hideDocDialog}>
                     <div className="flex flex-column justify-content-center">
                     <div className="field">
-                        <label htmlFor="file">Dokumen Elektronik</label>
+                        <label htmlFor="file">Upload Dokumen Elektronik {panggilan.nomor_perkara}</label>
                         <div className="p-inputgroup">
                             <FileUpload mode="basic" name="file" onUpload={uploadDoc} accept="application/pdf"/><br />
                         </div>
                     </div>
-
-                        <iframe src={fileURL} height='500px' />
-
+                    {
+                        panggilan.file && <iframe src={panggilan.file} height='800px' />
+                    }
                     </div>
                 </Dialog>
             </main >
